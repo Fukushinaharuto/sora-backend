@@ -1,0 +1,7 @@
+services:
+  app:
+    build: ./
+    volumes:
+      - .:/sora-back
+    ports:
+      - 8080:8000
