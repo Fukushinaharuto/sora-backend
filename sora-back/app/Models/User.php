@@ -18,9 +18,13 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'city_id',
         'name',
         'email',
         'password',
+        'post_count',
+        'like_count',
+        'image_url',
     ];
 
     /**
@@ -44,5 +48,28 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    //リレーション
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function likedPosts()
+    {
+        return $this->belongsToMany(Post::class, 'likes')
+            ->withTimestamps();
+    }
+
+    public function titles()
+    {
+        return $this->belongsToMany(Title::class, 'user_titles')
+            ->withTimestamps();
     }
 }
