@@ -10,6 +10,6 @@ class Prefecture extends Model
 
     public function cities()
     {
-        return $this->hasMany(City::class);
+        return $this->hasMany(City::class, 'prefecture_id', 'id');
     }
 }

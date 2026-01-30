@@ -3,6 +3,9 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Models\User;
+use App\Models\Category;
+use App\Models\City;
 
 return new class extends Migration
 {
@@ -13,11 +16,13 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('category_id');
-            $table->unsignedBigInteger('city_id');
+            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Category::class)->constrained()->restrictOnDelete();
+            $table->foreignIdFor(City::class)->constrained()->restrictOnDelete();
             $table->text('message');
             $table->timestamps();
+
+            $table->index(['category_id', 'created_at']);
         });
     }
 

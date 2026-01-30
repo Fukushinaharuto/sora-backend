@@ -13,16 +13,16 @@ class City extends Model
 
     public function users()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(User::class, 'city_id', 'id');
     }
 
     public function posts()
     {
-        return $this->hasMany(Post::class);
+        return $this->hasMany(Post::class, 'city_id', 'id');
     }
 
     public function prefecture()
     {
-        return $this->belongsTo(Prefecture::class);
+        return $this->belongsTo(Prefecture::class, 'prefecture_id', 'id');
     }
 }

@@ -17,7 +17,7 @@ class Title extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'user_titles')
+        return $this->belongsToMany(User::class, 'user_titles', 'title_id', 'user_id')
             ->withTimestamps();
     }
 }

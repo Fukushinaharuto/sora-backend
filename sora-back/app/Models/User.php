@@ -53,23 +53,23 @@ class User extends Authenticatable
     //リレーション
     public function city()
     {
-        return $this->belongsTo(City::class);
+        return $this->belongsTo(City::class, 'city_id', 'id');
     }
 
     public function posts()
     {
-        return $this->hasMany(Post::class);
+        return $this->hasMany(Post::class, 'user_id', 'id');
     }
 
     public function likedPosts()
     {
-        return $this->belongsToMany(Post::class, 'likes')
+        return $this->belongsToMany(Post::class, 'likes', 'user_id', 'post_id')
             ->withTimestamps();
     }
 
     public function titles()
     {
-        return $this->belongsToMany(Title::class, 'user_titles')
+        return $this->belongsToMany(Title::class, 'user_titles', 'user_id', 'title_id')
             ->withTimestamps();
     }
 }
