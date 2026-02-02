@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('message');
             $table->timestamps();
 
-            $table->index(['category_id', 'created_at']);
+            $table->index(['city_id', 'category_id', 'created_at']);
         });
     }
 
