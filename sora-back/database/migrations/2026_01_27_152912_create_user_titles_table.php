@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\User;
 use App\Models\Title;
 
 return new class extends Migration
@@ -14,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('user_titles', function (Blueprint $table) {
-            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
+            $table->foreignUuid('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreignIdFor(Title::class)->constrained()->cascadeOnDelete();
             $table->primary(['user_id', 'title_id']);
             $table->timestamps();
