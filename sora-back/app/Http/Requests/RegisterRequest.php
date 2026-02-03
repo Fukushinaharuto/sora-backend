@@ -16,33 +16,46 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:50',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                'unique:users,email',
+            ],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+            ],
         ];
     }
 
-    // バリデーションエラーメッセージ
     public function messages(): array
     {
         return [
-            'name.required' => 'ユーザー名は必須です',
-            'name.string' => 'ユーザー名は文字列で入力してください',
-            'name.max' => 'ユーザー名は50文字以内で入力してください',
+            'name.required' => '名前は必須です',
+            'name.string' => '名前は文字列で入力してください',
+            'name.max' => '名前は255文字以内で入力してください',
 
             'email.required' => 'メールアドレスは必須です',
+            'email.string' => 'メールアドレスは文字列で入力してください',
             'email.email' => '正しいメールアドレス形式で入力してください',
+            'email.max' => 'メールアドレスは255文字以内で入力してください',
             'email.unique' => 'このメールアドレスは既に登録されています',
 
             'password.required' => 'パスワードは必須です',
             'password.string' => 'パスワードは文字列で入力してください',
-            'password.min' => 'パスワードは6文字以上で入力してください',
-            'password.confirmed' => 'パスワード確認が一致しません',
+            'password.min' => 'パスワードは8文字以上で入力してください',
         ];
     }
 
-    // バリデーション失敗時のレスポンス形式統一
-    protected function failedValidation(Validator $validator)
+    public function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(
             response()->json([
