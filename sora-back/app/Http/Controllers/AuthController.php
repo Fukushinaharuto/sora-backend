@@ -19,13 +19,22 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'city_id' => $validated['city_id'],
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'success' => true,
-            'token' => $token
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'city_id' => $user->city_id,
+                'post_count' => $user->post_count,
+                'like_count' => $user->like_count,
+                'image_url' => $user->image_url,
+            ],
         ], 201);
     }
 
@@ -46,8 +55,16 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'success' => true,
             'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'city_id' => $user->city_id,
+                'post_count' => $user->post_count,
+                'like_count' => $user->like_count,
+                'image_url' => $user->image_url,
+            ],
         ]);
     }
 }
