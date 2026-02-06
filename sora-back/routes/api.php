@@ -8,3 +8,10 @@ use App\Http\Controllers\UserController;
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::patch('/user/city', [UserController::class, 'city']);
+Route::get('user/location/{prefecture_name}', [UserController::class, 'location']);
+
+// 認証必要
+Route::middleware("auth:sanctum")->group(function () {
+    Route::get('/user', [UserController::class, 'me']);
+    Route::get('user/profile', [UserController::class, 'profile']);
+});
