@@ -15,13 +15,11 @@ return new class extends Migration
         Schema::create('post_weather_snapshots', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Post::class)->constrained()->cascadeOnDelete();
-            $table->enum('weather_type', ["rain", "snow", "wind",  "temp"]);
+            $table->enum('weather_type', ["clear", "cloudy", "rain", "snow"]);
             $table->decimal('temperature', 4, 1);
-            $table->decimal('feels_like', 4, 1);
             $table->decimal('wind_speed', 4, 1);
-            $table->string('wind_direction', 3);
-            $table->unsignedTinyInteger('precipitation_prob');
-            $table->unsignedSmallInteger('visibility');
+            $table->tinyInteger('wind_direction');
+            $table->decimal('precipitation', 5, 1);
             $table->timestamps();
         });
     }

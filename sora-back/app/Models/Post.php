@@ -43,4 +43,10 @@ class Post extends Model
     {
         return $this->hasMany(PostImage::class, 'post_id', 'id');
     }
+
+    // 最初の1件の画像を取得
+    public function firstImage()
+    {
+        return $this->hasOne(PostImage::class)->oldest();
+    }
 }
