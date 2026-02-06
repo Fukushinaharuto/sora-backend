@@ -94,4 +94,14 @@ class User extends Authenticatable
         return $this->belongsToMany(Title::class, 'user_titles', 'user_id', 'title_id')
             ->withTimestamps();
     }
+
+    public function helpAssignments()
+    {
+        return $this->hasMany(HelpAssignment::class, 'user_id', 'id');
+    }
+
+    public function helpRequests()
+    {
+        return $this->hasMany(HelpRequest::class, 'user_id', 'id');
+    }
 }

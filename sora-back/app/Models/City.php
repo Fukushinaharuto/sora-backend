@@ -9,6 +9,8 @@ class City extends Model
     protected $fillable = [
         'prefecture_id',
         'name',
+        'latitude',
+        'longitude',
     ];
 
     public function users()
@@ -24,5 +26,10 @@ class City extends Model
     public function prefecture()
     {
         return $this->belongsTo(Prefecture::class, 'prefecture_id', 'id');
+    }
+
+    public function helpRequests()
+    {
+        return $this->hasMany(HelpRequest::class, 'city_id', 'id');
     }
 }
