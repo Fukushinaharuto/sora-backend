@@ -58,10 +58,29 @@ class UserController extends Controller
             ->distinct()
             ->pluck('date');
 
+        $recentActivities = $activeDates
+            ->sortDesc()
+            ->take(3)
+            ->map(function ($date) use ($user) {
+                $postCount = $user->posts()
+                    ->whereDate('created_at', $date)
+                    ->count();
+                $likeCount = $user->likedPosts()
+                    ->wherePivot('created_at', $date)
+                    ->count();
+
+                return [
+                    'date' => $date,
+                    'postCount' => $postCount,
+                    'likeCount' => $likeCount,
+                ];
+            });
+
         return response()->json([
             'post_count' => $user->post_count,
             'like_count' => $user->like_count,
-            'activeDays' => $activeDates->count()
+            'activeDays' => $activeDates->count(),
+            'recentActivities' => $recentActivities,
         ]);
     }
 }
