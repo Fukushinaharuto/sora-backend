@@ -38,15 +38,15 @@ class PostController extends Controller
         $formattedPosts = $posts->map(function ($post) {
             return [
                 'id' => $post->id,
-                'category_id' => $post->category_id,
-                'posted_by' => $post->user->name,
-                'weather_type' => $post->postWeatherSnapshot->weather_type,
+                'categoryId' => $post->category_id,
+                'postedBy' => $post->user->name,
+                'weatherType' => $post->postWeatherSnapshot->weather_type,
                 'temperature' => $post->postWeatherSnapshot->temperature,
-                'is_liked' => $post->is_liked,
-                'like_count' => $post->likes_count,
+                'isLiked' => $post->is_liked,
+                'likeCount' => $post->likes_count,
                 'message' => $post->message,
-                'image_url' => $post->firstImage->image_url,
-                'created_at' => $post->created_at->toISOString(),
+                'imageUrl' => $post->firstImage->image_url,
+                'createdAt' => $post->created_at->toISOString(),
             ];
         });
         return response()->json([
@@ -67,22 +67,22 @@ class PostController extends Controller
             ->findOrFail($id);
         return response()->json([
             'id' => $post->id,
-            'category_id' => $post->category_id,
-            'posted_by' => $post->user->name,
-            'weather_type' => $post->postWeatherSnapshot->weather_type,
+            'categoryId' => $post->category_id,
+            'postedBy' => $post->user->name,
+            'weatherType' => $post->postWeatherSnapshot->weather_type,
             'precipitation' => $post->postWeatherSnapshot->precipitation,
-            'wind_speed' => $post->postWeatherSnapshot->wind_speed,
-            'wind_direction' => PostWeatherSnapshot::windDirectionJapanese($post->postWeatherSnapshot->wind_direction),
+            'windSpeed' => $post->postWeatherSnapshot->wind_speed,
+            'windDirection' => PostWeatherSnapshot::windDirectionJapanese($post->postWeatherSnapshot->wind_direction),
             'temperature' => $post->postWeatherSnapshot->temperature,
-            'is_liked' => $post->is_liked,
-            'like_count' => $post->likes_count,
+            'isLiked' => $post->is_liked,
+            'likeCount' => $post->likes_count,
             'message' => $post->message,
-            'created_at' => $post->created_at->toISOString(),
-            'image_urls' => $post->postImages->pluck('image_url'),
+            'createdAt' => $post->created_at->toISOString(),
+            'imageUrls' => $post->postImages->pluck('image_url'),
             'year'   => $post->created_at->year,
             'month'  => $post->created_at->month,
             'day'    => $post->created_at->day,
-            'city_name' => $post->city->name,
+            'cityName' => $post->city->name,
         ]);
     }
 
