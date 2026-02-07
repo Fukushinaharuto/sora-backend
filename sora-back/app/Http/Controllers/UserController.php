@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\City;
+use App\Models\Post;
 use App\Models\Prefecture;
 use Carbon\Carbon;
 
@@ -49,40 +50,51 @@ class UserController extends Controller
     public function profile()
     {
         $user = Auth::user();
+        $postStats = $user->posts()
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as post_count')
+            ->withCount('likedUsers')
+            ->groupBy('date')
+            ->get()
+            ->keyBy('date');
+
+        $userPostCount = $postStats->sum('post_count');
+        $likeReceivedCount = $postStats->sum('liked_users_count');
+
         $postDates = $user->posts()
             ->selectRaw('DATE(created_at) as date');
 
         $likeDates = $user->likedPosts()
             ->selectRaw('DATE(likes.created_at) as date');
+
         $activeDates = $postDates
             ->union($likeDates)
-            ->distinct()
             ->pluck('date');
 
         $recentActivities = $activeDates
             ->sortDesc()
             ->take(3)
-            ->map(function ($date) use ($user) {
-                $postCount = $user->posts()
-                    ->whereDate('created_at', $date)
-                    ->count();
-                $likeCount = $user->likedPosts()
-                    ->wherePivot('created_at', $date)
-                    ->count();
-                $carbonDate = Carbon::parse($date);
+            ->map(function ($date) use ($postStats) {
+                $stats = $postStats->get($date);
 
-                $dateLabel = $carbonDate->isToday() ? '今日' : ($carbonDate->isYesterday() ? '昨日' : $carbonDate->format('n月j日'));
+                $carbonDate = Carbon::parse($date);
+                if ($carbonDate->isToday()) {
+                    $dateLabel = '今日';
+                } elseif ($carbonDate->isYesterday()) {
+                    $dateLabel = '昨日';
+                } else {
+                    $dateLabel = $carbonDate->format('n月j日');
+                }
 
                 return [
                     'date' => $dateLabel,
-                    'postCount' => $postCount,
-                    'likeCount' => $likeCount,
+                    'postCount' => $stats->post_count,
+                    'likeCount' => $stats->liked_users_count,
                 ];
             });
 
         return response()->json([
-            'post_count' => $user->post_count,
-            'like_count' => $user->like_count,
+            'post_count' => $userPostCount,
+            'like_count' => $likeReceivedCount,
             'activeDays' => $activeDates->count(),
             'recentActivities' => $recentActivities,
         ]);
