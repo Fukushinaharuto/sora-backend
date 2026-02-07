@@ -30,10 +30,10 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'city_id' => $user->city_id,
-                'post_count' => $user->post_count,
-                'like_count' => $user->like_count,
-                'image_url' => $user->image_url,
+                'cityId' => $user->city_id,
+                'postCount' => $user->post_count,
+                'likeCount' => $user->like_count,
+                'imageUrl' => $user->image_url,
             ],
         ], 201);
     }
@@ -60,10 +60,10 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'city_id' => $user->city_id,
-                'post_count' => $user->post_count,
-                'like_count' => $user->like_count,
-                'image_url' => $user->image_url,
+                'cityId' => $user->city_id,
+                'postCount' => $user->post_count,
+                'likeCount' => $user->like_count,
+                'imageUrl' => $user->image_url,
             ],
         ]);
     }

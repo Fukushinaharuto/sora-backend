@@ -1,25 +1,7 @@
 services:
-  redis:
-      image: redis:alpine
-      container_name: sora_redis
   app:
     build: ./
-    container_name: sora_app
     volumes:
       - .:/sora-back
     ports:
       - 8080:8000
-    command: php artisan serve --host=0.0.0.0 --port=8000
-    depends_on:
-      - redis
-  reverb:
-    build: ./
-    container_name: sora_reverb
-    volumes:
-      - .:/sora-back
-    ports:
-      - 6001:6001
-    command: php artisan reverb:start --host=0.0.0.0 --port=6001
-    depends_on:
-      - redis
-      - app
