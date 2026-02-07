@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\City;
 use App\Models\Prefecture;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -68,9 +69,12 @@ class UserController extends Controller
                 $likeCount = $user->likedPosts()
                     ->wherePivot('created_at', $date)
                     ->count();
+                $carbonDate = Carbon::parse($date);
+
+                $dateLabel = $carbonDate->isToday() ? '今日' : ($carbonDate->isYesterday() ? '昨日' : $carbonDate->format('n月j日'));
 
                 return [
-                    'date' => $date,
+                    'date' => $dateLabel,
                     'postCount' => $postCount,
                     'likeCount' => $likeCount,
                 ];
