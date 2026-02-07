@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\PostStoreRequest;
+use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
@@ -27,8 +28,10 @@ class PostController extends Controller
                 }
             ])
             ->where('city_id', $id);
-        if ($request->filled('category_id')) {
-            $posts->where('category_id', $request->category_id);
+
+        $categoryId = $request->category_id ?? 0;
+        if ($categoryId !== 0) {
+            $posts->where('category_id', $categoryId);
         }
         $posts = $posts->latest()->get();
 
@@ -118,11 +121,6 @@ class PostController extends Controller
                     'precipitation' => $weatherNow['prec'],
                 ]);
 
-                $path = Storage::disk('s3')->putFile('post_images', $request->file('imageFiles'));
-                $url = Storage::disk('s3')->url($path);
-                $post->postImages()->create([
-                    'image_url' => $url,
-                ]);
                 // 画像の保存処理
                 $imagesData = [];
                 foreach ($request->file('imageFiles') as $image) {
