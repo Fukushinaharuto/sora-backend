@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\PostStoreRequest;
-use App\Events\PostUpdated;
-use App\Events\PostLiked;
 
 class PostController extends Controller
 {
@@ -90,7 +88,7 @@ class PostController extends Controller
         $validated = $request->validated();
         $user = Auth::user();
 
-        $data = $weatherService->fetchWeather($request->lat, $request->lon);
+        $data = $weatherService->fetchWeather($validated['latitude'], $validated['longitude']);
 
         if (!$data) {
             return response()->json([
@@ -120,6 +118,11 @@ class PostController extends Controller
                     'precipitation' => $weatherNow['prec'],
                 ]);
 
+                $path = Storage::disk('s3')->putFile('post_images', $request->file('imageFiles'));
+                $url = Storage::disk('s3')->url($path);
+                $post->postImages()->create([
+                    'image_url' => $url,
+                ]);
                 // 画像の保存処理
                 $imagesData = [];
                 foreach ($request->file('imageFiles') as $image) {
@@ -139,14 +142,13 @@ class PostController extends Controller
                 $post = Post::with(['user', 'firstImage', 'postWeatherSnapshot'])
                     ->withCount('likedUsers')
                     ->find($post->id);
-
-                event(new PostUpdated($post));
             });
         } catch (\Exception $e) {
             // エラーが発生した場合、アップロードされた画像を削除
             foreach ($uploadedPaths as $path) {
                 Storage::disk('s3')->delete($path);
             }
+            Log::error('エラー発生', ['exception' => $e]);
 
             return response()->json([
                 'message' => '投稿の作成に失敗しました。'
@@ -167,7 +169,6 @@ class PostController extends Controller
         // いいね済みなら解除、未いいねなら追加
         $user->likedPosts()->toggle($postId);
         $post->loadCount('likedUsers');
-        event(new PostLiked($post));
 
         return response()->json([
             'message' => 'いいね状態が更新されました。',
