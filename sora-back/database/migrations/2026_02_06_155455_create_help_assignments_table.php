@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignUuid('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreignIdFor(HelpRequest::class)->constrained()->cascadeOnDelete();
-            $table->enum('status', ['waiting', 'in_progress', 'completed'])->default('waiting');
+            $table->enum('status', ['in_progress', 'completed'])->default('in_progress');
             $table->timestamps();
         });
     }
