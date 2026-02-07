@@ -16,4 +16,7 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::post('/post', [PostController::class, 'store']);
     Route::post('/post/like', [PostController::class, 'like']);
     Route::get('/help', [HelpController::class, 'index']);
+    Route::post('/help', [HelpController::class, 'store']);
+    Route::post('/helped', [HelpController::class, 'markHelped']);
+    Route::post('/help/assignments', [HelpController::class, 'assign']);
 });
