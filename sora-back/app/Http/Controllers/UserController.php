@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\City;
-use App\Models\Post;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\Prefecture;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -89,5 +91,34 @@ class UserController extends Controller
             'activeDays' => $activeDates->count(),
             'recentActivities' => $recentActivities,
         ]);
+    }
+
+    public function update(UpdateUserRequest $request)
+    {
+        $user = Auth::user();
+        $data = $request->validated();
+
+        try {
+            DB::transaction(function () use ($request, $user, &$data) {
+                if ($request->hasFile('image_url')) {
+                    $file = $request->file('image_url');
+                    $path = Storage::disk('s3')->putFile('post_images', $file);
+                    if (!$path) {
+                        throw new \Exception('画像のアップロードに失敗しました。');
+                    }
+                    $data['image_url'] = Storage::disk('s3')->url($path);
+                }
+
+                $user->update($data);
+            });
+
+            return response()->json([
+                'message' => 'プロフィールが更新されました。',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'プロフィールの更新に失敗しました。',
+            ], 500);
+        }
     }
 }

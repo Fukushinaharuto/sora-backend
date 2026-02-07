@@ -15,7 +15,8 @@ Route::get('user/location/{prefecture_name}', [UserController::class, 'location'
 // 認証必要
 Route::middleware("auth:sanctum")->group(function () {
     Route::get('/user', [UserController::class, 'me']);
-    Route::get('user/profile', [UserController::class, 'profile']);
+    Route::get('/user/profile', [UserController::class, 'profile']);
+    Route::put('/user/profile', [UserController::class, 'update']);
     Route::get('/post/{city_id}', [PostController::class, 'index']);
     Route::get('/post/show/{id}', [PostController::class, 'show']);
     Route::post('/post', [PostController::class, 'store']);
