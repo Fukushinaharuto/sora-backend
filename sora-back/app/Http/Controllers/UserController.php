@@ -50,47 +50,38 @@ class UserController extends Controller
     public function profile()
     {
         $user = Auth::user();
-        $postStats = $user->posts()
-            ->selectRaw('DATE(created_at) as date, COUNT(*) as post_count')
-            ->withCount('likedUsers')
-            ->groupBy('date')
-            ->get()
-            ->keyBy('date');
+        $posts = $user->posts()->withCount('likedUsers')->get();
 
-        $userPostCount = $postStats->sum('post_count');
-        $likeReceivedCount = $postStats->sum('liked_users_count');
+        $userPostCount = $posts->count();
+        $likeReceivedCount = $posts->sum('liked_users_count');
 
-        $postDates = $user->posts()
-            ->selectRaw('DATE(created_at) as date');
-
+        $postDates = $user->posts()->pluck('created_at')->map(fn($d) => $d->format('Y-m-d'));
         $likeDates = $user->likedPosts()
-            ->selectRaw('DATE(likes.created_at) as date');
+            ->pluck('likes.created_at')
+            ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'));
 
-        $activeDates = $postDates
-            ->union($likeDates)
-            ->pluck('date');
+        $activeDates = $postDates->merge($likeDates)->unique()->sortDesc();
 
         $recentActivities = $activeDates
-            ->sortDesc()
             ->take(3)
-            ->map(function ($date) use ($postStats) {
-                $stats = $postStats->get($date);
+            ->map(function ($date) use ($posts) {
+                $dayPosts = $posts->filter(fn($p) => $p->created_at->format('Y-m-d') === $date);
+                $postCount = $dayPosts->count();
+                $likeCount = $dayPosts->sum('liked_users_count');
 
                 $carbonDate = Carbon::parse($date);
-                if ($carbonDate->isToday()) {
-                    $dateLabel = '今日';
-                } elseif ($carbonDate->isYesterday()) {
-                    $dateLabel = '昨日';
-                } else {
-                    $dateLabel = $carbonDate->format('n月j日');
-                }
+                $dateLabel = match (true) {
+                    $carbonDate->isToday() => '今日',
+                    $carbonDate->isYesterday() => '昨日',
+                    default => $carbonDate->format('n月j日'),
+                };
 
                 return [
                     'date' => $dateLabel,
-                    'postCount' => $stats->post_count,
-                    'likeCount' => $stats->liked_users_count,
+                    'postCount' => $postCount,
+                    'likeCount' => $likeCount,
                 ];
-            });
+            })->values();
 
         return response()->json([
             'post_count' => $userPostCount,
