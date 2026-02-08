@@ -26,10 +26,6 @@ class LoginRequest extends FormRequest
                 'required',
                 'string',
             ],
-            'city_id' => [
-                'required',
-                'integer',
-            ],
         ];
     }
 
@@ -43,9 +39,6 @@ class LoginRequest extends FormRequest
 
             'password.required' => 'パスワードは必須です',
             'password.string' => 'パスワードは文字列で入力してください',
-
-            'city_id.required' => '市町村区を選択されていません',
-            'city_id.integer' => '市町村区を選択されていません',
         ];
     }
 
