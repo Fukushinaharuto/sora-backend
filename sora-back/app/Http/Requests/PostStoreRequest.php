@@ -29,7 +29,7 @@ class PostStoreRequest extends FormRequest
             'longitude' => 'required|numeric|between:-180,180',
             'category_id' => 'required|exists:categories,id',
             'message' => 'required|string|max:1000',
-            'imageFiles'   => 'required',
+            'imageFiles'   => 'sometimes|array',
             'imageFiles.*' => 'image|max:2048',
         ];
     }
@@ -48,7 +48,7 @@ class PostStoreRequest extends FormRequest
             'category_id.exists'   => '存在しないカテゴリです。',
             'message.required'     => 'メッセージは必須です。',
             'message.max'          => 'メッセージは1000文字以内で入力してください。',
-            'imageFiles.required'  => '画像は必須です。',
+            'imageFiles.array' => '画像は配列形式で送信してください。',
             'imageFiles.*.image'   => 'アップロードできるのは画像ファイルのみです。',
             'imageFiles.*.max'     => '画像ファイルは2MB以内でアップロードしてください。',
         ];
