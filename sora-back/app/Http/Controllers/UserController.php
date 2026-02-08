@@ -20,10 +20,9 @@ class UserController extends Controller
         if (Auth::guard('sanctum')->check()) {
             Auth::guard('sanctum')->user()->update(['city_id' => $city->id]);
         }
-
+        
         return response()->json([
-            'auth_check' => Auth::guard('sanctum')->check(),
-            'city_id' => $city->id,
+            'cityId' => $city->id,
         ]);
     }
 
@@ -86,8 +85,8 @@ class UserController extends Controller
             })->values();
 
         return response()->json([
-            'post_count' => $userPostCount,
-            'like_count' => $likeReceivedCount,
+            'postCount' => $userPostCount,
+            'likeCount' => $likeReceivedCount,
             'activeDays' => $activeDates->count(),
             'recentActivities' => $recentActivities,
         ]);
