@@ -17,7 +17,7 @@ class PostRelationsSeeder extends Seeder
 
         foreach ($posts as $post) {
             $post->postWeatherSnapshot()->create([
-                'weather_type' => 'sunny',
+                'weather_type' => 'clear',
                 'temperature' => 25,
                 'wind_speed' => 5,
                 'wind_direction' => 14,

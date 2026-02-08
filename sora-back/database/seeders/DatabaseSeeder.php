@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PrefectureSeeder::class,
             CitySeeder::class,
+            UserSeeder::class,
+            CategorySeeder::class,
             PostSeeder::class,
             PostRelationsSeeder::class,
         ]);

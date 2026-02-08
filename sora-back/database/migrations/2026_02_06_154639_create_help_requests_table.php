@@ -16,8 +16,8 @@ return new class extends Migration
             $table->id();
             $table->foreignUuid('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreignIdFor(City::class)->constrained()->restrictOnDelete();
-            $table->text('message');
-            $table->enum('status', ['in_progress', 'completed'])->default('in_progress');
+            $table->text('message')->nullable();
+            $table->enum('status', ['waiting', 'in_progress', 'completed'])->default('waiting');
             $table->string('address');
             $table->float('latitude');
             $table->float('longitude');
