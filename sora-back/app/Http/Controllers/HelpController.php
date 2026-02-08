@@ -43,7 +43,7 @@ class HelpController extends Controller
                 'longitude' => $item->longitude,
                 'address' => $item->address,
                 'message' => $item->message,
-                'status' => $item->is_helping_by_me,
+                'isHelping' => $item->is_helping_by_me,
             ];
         });
 
@@ -85,8 +85,8 @@ class HelpController extends Controller
         try {
             DB::transaction(function () use ($userId) {
                 $request = HelpRequest::where('user_id', $userId)
-                    ->where('status', 'in_progress')
-                    ->first();
+                ->whereIn('status', ['in_progress', 'waiting'])
+                ->first();
 
                 if (!$request) {
                     throw new \Exception('お助け申請が見つかりません。', 404);

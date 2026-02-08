@@ -26,5 +26,3 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::post('/helped', [HelpController::class, 'markHelped']);
     Route::post('/help/assignments', [HelpController::class, 'assign']);
 });
-Route::get('/post/{city_id}', [PostController::class, 'index']);
-Route::get('/post/show/{id}', [PostController::class, 'show']);
