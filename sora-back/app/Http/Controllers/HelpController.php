@@ -124,15 +124,7 @@ class HelpController extends Controller
                 if ($existingAssignment) {
                     throw new \Exception('すでに進行中のお助け申請があります。', 403);
                 }
-
-                $inProgressAssignments = $helpRequest->helpAssignments()
-                    ->where('status', 'in_progress')
-                    ->exists();
-
-                if ($inProgressAssignments) {
-                    throw new \Exception('この申請は既に他の人が助けています。', 403);
-                }
-
+                
                 $helpRequest->update(['status' => 'in_progress']);
 
                 $helpRequest->helpAssignments()->create([
