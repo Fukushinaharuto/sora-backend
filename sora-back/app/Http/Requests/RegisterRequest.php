@@ -33,9 +33,6 @@ class RegisterRequest extends FormRequest
                 'string',
                 'min:8',
             ],
-            'city_id' => [
-                'required',
-            ],
         ];
     }
 
@@ -55,8 +52,6 @@ class RegisterRequest extends FormRequest
             'password.required' => 'パスワードは必須です',
             'password.string' => 'パスワードは文字列で入力してください',
             'password.min' => 'パスワードは8文字以上で入力してください',
-
-            'city_id.required' => '市町村区は必須です',
         ];
     }
 
