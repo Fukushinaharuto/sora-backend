@@ -21,12 +21,19 @@ class HelpController extends Controller
                     $query->where('status', 'in_progress');
                 }
             ])
+            ->withExists([
+                'helpAssignments as is_helping_by_me' => function ($q) {
+                    $q->where('user_id', Auth::id())
+                        ->where('status', 'in_progress');
+                }
+            ])
             ->where('city_id', $cityId)
             ->whereIn('status', ['waiting', 'in_progress'])
             ->get();
 
         $response = $datas->map(function ($item) {
             return [
+                'user' => Auth::id(),
                 'id' => $item->id,
                 'name' => $item->user->name,
                 'createAt' => $item->created_at->toISOString(),
@@ -35,7 +42,8 @@ class HelpController extends Controller
                 'latitude' => $item->latitude,
                 'longitude' => $item->longitude,
                 'address' => $item->address,
-                'message' => $item->message
+                'message' => $item->message,
+                'status' => $item->is_helping_by_me,
             ];
         });
 

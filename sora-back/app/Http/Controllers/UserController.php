@@ -20,7 +20,7 @@ class UserController extends Controller
         if (Auth::guard('sanctum')->check()) {
             Auth::guard('sanctum')->user()->update(['city_id' => $city->id]);
         }
-        
+
         return response()->json([
             'cityId' => $city->id,
         ]);
@@ -39,12 +39,17 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
+        $hasActiveHelpRequest = $user->helpRequests()
+            ->whereIn('status', ['waiting', 'in_progress'])
+            ->exists();
+
         return response()->json([
             'id' => $user->id,
             'name' => $user->name,
             'cityId' => $user->city->id,
             'cityName' => $user->city->name,
             'imageUrl' => $user->image_url,
+            'status' => $hasActiveHelpRequest,
         ]);
     }
 
