@@ -29,12 +29,13 @@ class HelpController extends Controller
             return [
                 'id' => $item->id,
                 'name' => $item->user->name,
-                'create_at' => $item->created_at->toISOString(),
+                'createAt' => $item->created_at->toISOString(),
                 'status' => $item->status,
-                'helpers_count' => $item->helpers_count,
+                'helpersCount' => $item->helpers_count,
                 'latitude' => $item->latitude,
                 'longitude' => $item->longitude,
                 'address' => $item->address,
+                'message' => $item->message
             ];
         });
 

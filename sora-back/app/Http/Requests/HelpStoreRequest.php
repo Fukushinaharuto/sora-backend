@@ -24,7 +24,7 @@ class HelpStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'message' => ['required', 'string', 'max:1000'],
+            'message' => ['string', 'max:1000'],
             'city_id' => ['required', 'integer', 'exists:cities,id'],
             'address' => ['required', 'string', 'max:255'],
             'latitude' => ['required', 'numeric', 'between:-90,90'],
@@ -35,7 +35,6 @@ class HelpStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'message.required' => 'メッセージは必須です。',
             'message.max' => 'メッセージは1000文字以内で入力してください。',
 
             'city_id.required' => '都市を選択してください。',
