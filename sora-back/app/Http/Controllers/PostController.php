@@ -182,16 +182,25 @@ class PostController extends Controller
 
     public function like(Request $request)
     {
-        $user = Auth::user();
-        $postId = $request->post_id;
+        try {
+            $user = Auth::user();
+            $postId = $request->post_id;
 
-        $post = Post::findOrFail($postId);
-        // いいね済みなら解除、未いいねなら追加
-        $user->likedPosts()->toggle($postId);
-        $post->loadCount('likedUsers');
+            $post = Post::findOrFail($postId);
 
-        return response()->json([
-            'message' => 'いいね状態が更新されました。',
-        ]);
+            $user->likedPosts()->toggle($postId);
+            $isLiked = $user->likedPosts()->where('post_id', $postId)->exists();
+            $likesCount = $post->likedUsers()->count();
+
+            return response()->json([
+                'isLiked' => $isLiked,
+                'likeCount' => $likesCount,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'いいねの更新に失敗しました。',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
