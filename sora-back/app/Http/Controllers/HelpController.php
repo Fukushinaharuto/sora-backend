@@ -8,6 +8,8 @@ use App\Http\Requests\HelpStoreRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\HelpAssignment;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\City;
 
 class HelpController extends Controller
 {
@@ -125,7 +127,7 @@ class HelpController extends Controller
                 if ($existingAssignment) {
                     throw new \Exception('すでに進行中のお助け申請があります。', 403);
                 }
-                
+
                 $helpRequest->update(['status' => 'in_progress']);
 
                 $helpRequest->helpAssignments()->create([
@@ -141,6 +143,22 @@ class HelpController extends Controller
             return response()->json([
                 'message' => $e->getMessage() ?: 'お助け参加に失敗しました。',
             ], 500);
+        }
+    }
+
+    public function location(Request $request)
+    {
+        try {
+            $city = City::findOrFail($request->city_id);
+
+            return response()->json([
+                'latitude' => $city->latitude,
+                'longitude' => $city->longitude,
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => '指定された市町村区が見つかりません。',
+            ], 404);
         }
     }
 }
