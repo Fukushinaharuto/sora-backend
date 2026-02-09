@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\PostStoreRequest;
+use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
@@ -110,6 +111,19 @@ class PostController extends Controller
     public function store(PostStoreRequest $request, WeatherApiService $weatherService)
     {
         $validated = $request->validated();
+         // ✅ 画像サイズ＆エラー確認ログ
+    if ($request->hasFile('imageFiles')) {
+        $files = $request->file('imageFiles');
+        foreach ($files as $index => $file) {
+            Log::info("画像 {$index} 情報", [
+                'original_name' => $file->getClientOriginalName(),
+                'size_bytes' => $file->getSize(),
+                'size_mb' => round($file->getSize() / 1024 / 1024, 2) . 'MB',
+                'error_code' => $file->getError(),
+                'error_msg' => $file->getErrorMessage()
+            ]);
+        }
+    }
         $user = Auth::user();
 
         $data = $weatherService->fetchWeather($validated['latitude'], $validated['longitude']);
