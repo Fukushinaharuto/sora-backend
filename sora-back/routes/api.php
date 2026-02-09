@@ -20,13 +20,11 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::get('/user', [UserController::class, 'me']);
     Route::get('/user/profile', [UserController::class, 'profile']);
     Route::put('/user/profile', [UserController::class, 'update']);
-
     Route::post('/post', [PostController::class, 'store']);
     Route::post('/post/like', [PostController::class, 'like']);
     Route::get('/help', [HelpController::class, 'index']);
     Route::post('/help', [HelpController::class, 'store']);
     Route::post('/helped', [HelpController::class, 'markHelped']);
     Route::post('/help/assignments', [HelpController::class, 'assign']);
+    Route::get('/help/city', [HelpController::class, 'location']);
 });
-
-

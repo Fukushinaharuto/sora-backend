@@ -8,6 +8,10 @@ use App\Http\Requests\HelpStoreRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\HelpAssignment;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\City;
+use Illuminate\Support\Facades\Log;
+
 
 class HelpController extends Controller
 {
@@ -28,6 +32,7 @@ class HelpController extends Controller
                 }
             ])
             ->where('city_id', $cityId)
+            ->where('user_id', '!=', Auth::id())
             ->whereIn('status', ['waiting', 'in_progress'])
             ->get();
 
@@ -43,7 +48,7 @@ class HelpController extends Controller
                 'longitude' => $item->longitude,
                 'address' => $item->address,
                 'message' => $item->message,
-                'status' => $item->is_helping_by_me,
+                'isHelping' => $item->is_helping_by_me,
             ];
         });
 
@@ -85,8 +90,9 @@ class HelpController extends Controller
         try {
             DB::transaction(function () use ($userId) {
                 $request = HelpRequest::where('user_id', $userId)
-                    ->where('status', 'in_progress')
-                    ->first();
+                ->whereIn('status', ['in_progress', 'waiting'])
+                ->first();
+
 
                 if (!$request) {
                     throw new \Exception('お助け申請が見つかりません。', 404);
@@ -108,13 +114,16 @@ class HelpController extends Controller
     public function assign(Request $request)
     {
         $userId = Auth::id();
+        
         try {
             DB::transaction(function () use ($request, $userId) {
                 $helpRequest = HelpRequest::where('id', $request->help_request_id)
-                    ->where('status', 'waiting')
+                    ->whereIn('status', ['in_progress', 'waiting'])
+                    ->where('user_id', '!=', $userId)
                     ->first();
 
                 if (!$helpRequest) {
+                    Log::info('assign called', $helpRequest);
                     throw new \Exception('お助け申請が見つかりません。', 404);
                 }
                 $existingAssignment = HelpAssignment::where('user_id', $userId)
@@ -123,14 +132,6 @@ class HelpController extends Controller
 
                 if ($existingAssignment) {
                     throw new \Exception('すでに進行中のお助け申請があります。', 403);
-                }
-
-                $inProgressAssignments = $helpRequest->helpAssignments()
-                    ->where('status', 'in_progress')
-                    ->exists();
-
-                if ($inProgressAssignments) {
-                    throw new \Exception('この申請は既に他の人が助けています。', 403);
                 }
 
                 $helpRequest->update(['status' => 'in_progress']);
@@ -148,6 +149,22 @@ class HelpController extends Controller
             return response()->json([
                 'message' => $e->getMessage() ?: 'お助け参加に失敗しました。',
             ], 500);
+        }
+    }
+
+    public function location(Request $request)
+    {
+        try {
+            $city = City::findOrFail($request->city_id);
+
+            return response()->json([
+                'latitude' => $city->latitude,
+                'longitude' => $city->longitude,
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => '指定された市町村区が見つかりません。',
+            ], 404);
         }
     }
 }
